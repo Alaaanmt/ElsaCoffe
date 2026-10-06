@@ -1,0 +1,84 @@
+@import "tailwindcss";
+@import "@fontsource-variable/cormorant-garamond";
+@import "@fontsource-variable/outfit";
+
+/* Modo oscuro por clase `.dark` en <html> (ver script inline de index.html). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tokens de diseño. Los semánticos apuntan a variables CSS que cambian con el tema. */
+@theme {
+  /* Marca (constantes) */
+  --color-verde-marca: #24471F;
+  --color-rosa-marca: #EFB4CD;
+  --color-rosa-suave: #F8DCE8;
+  --color-crema: #F4EFE4;
+
+  /* Semánticos (dependen del tema) */
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-superficie-alta: var(--superficie-alta);
+  --color-tinta: var(--tinta);
+  --color-tinta-suave: var(--tinta-suave);
+  --color-cta-fondo: var(--cta-fondo);
+  --color-cta-texto: var(--cta-texto);
+  --color-acento: var(--acento);
+  --color-acento-suave: var(--acento-suave);
+  --color-borde-control: var(--borde-control);
+  --color-borde-suave: var(--borde-suave);
+  --color-foco: var(--foco);
+
+  /* Tipografía */
+  --font-titulo: "Cormorant Garamond Variable", ui-serif, Georgia, serif;
+  --font-cuerpo: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Modo claro (por defecto) */
+:root {
+  --fondo: #FDFBF7;
+  --superficie: #FFFFFF;
+  --superficie-alta: #FFFFFF;
+  --tinta: #24471F;
+  --tinta-suave: #4A6045;
+  --cta-fondo: #24471F;
+  --cta-texto: #FDFBF7;
+  --acento: #EFB4CD;
+  --acento-suave: #F8DCE8;
+  --borde-control: #7B8F77;
+  --borde-suave: rgb(36 71 31 / 0.14);
+  --foco: #24471F;
+  --sombra-tinte: rgb(36 71 31 / 0.14);
+}
+
+/* Modo oscuro */
+.dark {
+  --fondo: #152B19;
+  --superficie: #243A2B;
+  --superficie-alta: #2D4636;
+  --tinta: #F4EFE4;
+  --tinta-suave: #C9D1BE;
+  --cta-fondo: #EFB4CD;
+  --cta-texto: #152B19;
+  --acento: #EFB4CD;
+  --acento-suave: rgb(239 180 205 / 0.16);
+  --borde-control: #6F8A74;
+  --borde-suave: rgb(244 239 228 / 0.14);
+  --foco: #EFB4CD;
+  --sombra-tinte: rgb(5 14 7 / 0.5);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-tinta);
+  font-family: var(--font-cuerpo);
+  transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+}

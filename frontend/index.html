@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ELSA Coffee BA | Café de especialidad y pastelería artesanal</title>
+    <meta
+      name="description"
+      content="Cafetería de barrio en José León Suárez. Productos 100% artesanales de elaboración propia, almuerzo, menú ejecutivo y opciones sin TACC."
+    />
+    <meta name="theme-color" content="#FDFBF7" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Aplica el tema antes del primer pintado para evitar el parpadeo.
+      (function () {
+        var tema = null
+        try {
+          tema = localStorage.getItem('elsa-tema')
+        } catch (e) {}
+        if (tema !== 'claro' && tema !== 'oscuro') {
+          tema = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro'
+        }
+        var raiz = document.documentElement
+        raiz.classList.toggle('dark', tema === 'oscuro')
+        raiz.style.colorScheme = tema === 'oscuro' ? 'dark' : 'light'
+        var meta = document.querySelector('meta[name="theme-color"]')
+        if (meta) meta.setAttribute('content', tema === 'oscuro' ? '#152B19' : '#FDFBF7')
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
