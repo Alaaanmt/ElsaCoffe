@@ -90,13 +90,27 @@ const scrollToSection = async (id: string) => {
         >
           Visítanos
         </button>
+        <router-link 
+          to="/tortas"
+          class="text-xl font-medium tracking-wide transition-colors hover:text-acento cursor-pointer"
+          :class="scrolled ? 'text-tinta' : 'text-white drop-shadow-sm'"
+        >
+          Tortas
+        </router-link>
       </nav>
 
-      <div class="flex items-center gap-4">
-        <div class="md:hidden">
+      <div class="flex items-center gap-3">
+        <!-- Botones rápidos en versión Mobile (< md) -->
+        <div class="flex md:hidden items-center gap-2">
           <AuthorButton variant="pestana" @click="scrollToSection('carta')" :active="false">
             Carta
           </AuthorButton>
+          
+          <router-link to="/tortas">
+            <AuthorButton variant="pestana" :active="route.path === '/tortas'">
+              Tortas
+            </AuthorButton>
+          </router-link>
         </div>
         <ThemeToggle />
       </div>

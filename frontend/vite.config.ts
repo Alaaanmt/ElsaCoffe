@@ -11,6 +11,6 @@ export default defineConfig({
     },
   },
   /*server: {
-    allowedHosts: true, // Esto permite cualquier dominio externo como ngrok
+    allowedHosts: true, 
   }*/
 })
