@@ -2,7 +2,9 @@
 import { useCart } from '@/composables/useCart'
 import { PhX, PhTrash, PhPlus, PhMinus, PhShoppingBag, PhArrowRight, PhStorefront, PhTruck, PhWarning } from '@phosphor-icons/vue'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const {
   isCartOpen,
   cartItems,
@@ -17,21 +19,17 @@ const {
   formattedTotalConEnvio
 } = useCart()
 
-const emit = defineEmits(['iniciar-checkout'])
-
 const codigoPostalInput = ref('')
 const errorCp = ref('')
 
 const handleCalcularEnvio = () => {
   const cpLimpio = codigoPostalInput.value.trim()
-  
   // Validar que sean exactamente 4 dígitos numéricos
   if (!/^\d{4}$/.test(cpLimpio)) {
     errorCp.value = 'Código postal incorrecto. Debe tener 4 dígitos numéricos.'
     costoEnvio.value = 0
     return
   }
-
   errorCp.value = ''
   seleccionarTipoEntrega('envio')
   calcularCostoEnvio(cpLimpio)
@@ -50,11 +48,13 @@ const handleIniciarCompra = () => {
       return
     }
   }
-  
+
   // Si eligió retiro en tienda, no hace falta validar nada del código postal
   errorCp.value = ''
   isCartOpen.value = false
-  emit('iniciar-checkout')
+  
+  // Redirigimos a la vista de checkout oficial
+  router.push('/checkout')
 }
 </script>
 
@@ -72,14 +72,13 @@ const handleIniciarCompra = () => {
     leave-from-class="translate-x-0" leave-to-class="translate-x-full">
     <div v-if="isCartOpen"
       class="fixed inset-y-0 right-0 z-[101] w-full max-w-md bg-fondo border-l border-borde-suave shadow-2xl flex flex-col">
-
+      
       <!-- Cabecera -->
       <div class="p-6 border-b border-borde-suave flex items-center justify-between">
         <div class="flex items-center gap-2">
           <PhShoppingBag :size="22" weight="fill" class="text-verde-marca dark:text-acento" />
           <h3 class="font-titulo text-xl font-semibold text-tinta">Tu Carrito</h3>
-          <span
-            class="text-xs font-mono px-2 py-0.5 rounded-full bg-superficie-alta text-tinta-suave border border-borde-suave">
+          <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-superficie-alta text-tinta-suave border border-borde-suave">
             {{ totalItems }}
           </span>
         </div>
@@ -92,13 +91,11 @@ const handleIniciarCompra = () => {
       <!-- Listado de Productos -->
       <div class="flex-1 overflow-y-auto p-6 space-y-4">
         <div v-if="cartItems.length === 0" class="text-center py-16 space-y-4">
-          <div
-            class="size-16 mx-auto rounded-full bg-superficie border border-borde-suave flex items-center justify-center text-tinta-suave">
+          <div class="size-16 mx-auto rounded-full bg-superficie border border-borde-suave flex items-center justify-center text-tinta-suave">
             <PhShoppingBag :size="32" weight="regular" />
           </div>
           <p class="font-titulo text-lg font-medium text-tinta">Tu carrito está vacío</p>
-          <p class="text-xs text-tinta-suave max-w-xs mx-auto">Explorá nuestra sección de tortas y agregá tus favoritas.
-          </p>
+          <p class="text-xs text-tinta-suave max-w-xs mx-auto">Explorá nuestra sección de tortas y agregá tus favoritas.</p>
         </div>
 
         <div v-for="item in cartItems" :key="item.id"
@@ -127,8 +124,7 @@ const handleIniciarCompra = () => {
             </div>
           </div>
           <div class="text-right">
-            <span class="font-mono text-sm font-semibold text-tinta">$ {{ (item.precioNum *
-              item.cantidad).toLocaleString('es-AR') }}</span>
+            <span class="font-mono text-sm font-semibold text-tinta">$ {{ (item.precioNum * item.cantidad).toLocaleString('es-AR') }}</span>
           </div>
         </div>
 
@@ -145,6 +141,7 @@ const handleIniciarCompra = () => {
               </div>
               <span class="text-[10px] text-tinta-suave">José León Suárez 2015</span>
             </button>
+
             <button @click="tipoEntrega = 'envio'"
               class="p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col gap-1"
               :class="tipoEntrega === 'envio' ? 'border-verde-marca bg-verde-marca/5 text-tinta' : 'border-borde-suave bg-superficie text-tinta-suave'">
@@ -166,12 +163,10 @@ const handleIniciarCompra = () => {
                 Calcular
               </button>
             </div>
-
             <!-- Mensaje de error de CP -->
             <p v-if="errorCp" class="text-xs text-red-500 font-medium flex items-center gap-1">
               <PhWarning :size="14" weight="bold" /> {{ errorCp }}
             </p>
-
             <p v-if="costoEnvio > 0 && !errorCp" class="text-xs text-verde-marca font-medium">
               Costo de envío: $ {{ costoEnvio.toLocaleString('es-AR') }}
             </p>
@@ -188,8 +183,9 @@ const handleIniciarCompra = () => {
           </div>
           <div class="flex justify-between text-sm text-tinta-suave">
             <span>Envío</span>
-            <span class="font-mono font-medium text-tinta">{{ tipoEntrega === 'retiro' ? 'Gratis (Retiro)' : (costoEnvio
-              > 0 ? `$ ${costoEnvio.toLocaleString('es-AR')}` : 'A calcular') }}</span>
+            <span class="font-mono font-medium text-tinta">
+              {{ tipoEntrega === 'retiro' ? 'Gratis (Retiro)' : (costoEnvio > 0 ? `$ ${costoEnvio.toLocaleString('es-AR')}` : 'A calcular') }}
+            </span>
           </div>
           <div class="flex justify-between text-base font-semibold text-tinta pt-2 border-t border-borde-suave">
             <span>Total</span>
@@ -203,6 +199,7 @@ const handleIniciarCompra = () => {
           <PhArrowRight :size="16" weight="bold" class="transition-transform group-hover:translate-x-1" />
         </button>
       </div>
+
     </div>
   </Transition>
 </template>

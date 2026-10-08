@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 
 export interface CartItem {
   id: string
@@ -10,8 +10,10 @@ export interface CartItem {
   rinde: string
 }
 
-// Estado global compartido entre componentes
-const cartItems = ref<CartItem[]>([])
+
+const carritoGuardado = typeof window !== 'undefined' ? localStorage.getItem('elsa_cart') : null
+const cartItems = ref<CartItem[]>(carritoGuardado ? JSON.parse(carritoGuardado) : [])
+
 const isCartOpen = ref(false)
 const latestAddedItem = ref<CartItem | null>(null)
 const showToast = ref(false)
@@ -21,12 +23,33 @@ let toastTimer: number | null = null
 const tipoEntrega = ref<'retiro' | 'envio'>('retiro') // por defecto retiro o envío
 const costoEnvio = ref<number>(0)
 const sucursalRetiro = ref('José León Suárez 2015, Mataderos, CABA')
+const fechaSeleccionada = ref<Date>(new Date())
+const turnoSeleccionado = ref<'mañana' | 'tarde'>('mañana')
+
+const datosCliente = reactive({
+  nombre: '',
+  apellido: '',
+  email: '',
+  telefono: '',
+  notas: '',
+  calle: '',
+  numero: '',
+  departamento: '',
+  ciudad: '',
+  codigoPostal: ''
+})
+
+// Guardar automáticamente en localStorage cada vez que cartItems cambie
+watch(cartItems, (nuevoCarrito) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('elsa_cart', JSON.stringify(nuevoCarrito))
+  }
+}, { deep: true })
 
 export function useCart() {
   const addToCart = (product: { id: string; nombre: string; precio: string; imagen: string; rinde: string }) => {
     // Convertir el precio string (ej: "$18.500") a número (18500) para calcular bien los totales
     const precioNum = parseInt(product.precio.replace('$', '').replace('.', ''))
-
     const existing = cartItems.value.find(item => item.id === product.id)
     if (existing) {
       existing.cantidad++
@@ -42,7 +65,7 @@ export function useCart() {
       })
     }
 
-    // Activar la notificación flotante (Toast de la Foto 1)
+    // Activar la notificación flotante (Toast)
     latestAddedItem.value = {
       id: product.id,
       nombre: product.nombre,
@@ -52,11 +75,10 @@ export function useCart() {
       cantidad: existing ? existing.cantidad : 1,
       rinde: product.rinde
     }
-    
     showToast.value = true
     if (toastTimer) clearTimeout(toastTimer)
     
-    // Desaparece automáticamente a los 4 segundos (o lo podés cerrar con la X)
+    // Desaparece automáticamente a los 4 segundos
     toastTimer = window.setTimeout(() => {
       showToast.value = false
     }, 4000)
@@ -100,9 +122,8 @@ export function useCart() {
 
   const calcularCostoEnvio = (cp: string) => {
     if (!cp.trim()) return
-    // Lógica simple para matchear prefijos o códigos postales
     const cpLimpio = cp.trim().toUpperCase()
-    
+    datosCliente.codigoPostal = cpLimpio
     if (cpLimpio.startsWith('1440') || cpLimpio.startsWith('1439')) {
       costoEnvio.value = 3500
     } else if (cpLimpio.startsWith('C')) {
@@ -134,9 +155,12 @@ export function useCart() {
     tipoEntrega,
     costoEnvio,
     sucursalRetiro,
+    fechaSeleccionada,
+    turnoSeleccionado,
     seleccionarTipoEntrega,
     calcularCostoEnvio,
     totalConEnvio,
-    formattedTotalConEnvio
+    formattedTotalConEnvio,
+    datosCliente
   }
 }
