@@ -1,0 +1,164 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -------------------------
+// ENUMS
+// -------------------------
+
+enum TipoEntrega {
+  RETIRO
+  ENVIO
+}
+
+enum MetodoPago {
+  MERCADOPAGO
+  TRANSFERENCIA
+  EFECTIVO
+}
+
+enum EstadoPedido {
+  PENDIENTE
+  CONFIRMADO
+  EN_PREPARACION
+  LISTO
+  COMPLETADO
+  CANCELADO
+}
+
+enum EstadoPago {
+  PENDIENTE
+  PAGADO
+  RECHAZADO
+  REEMBOLSADO
+}
+
+enum EstadoEntrega {
+  PENDIENTE
+  ENTREGADO
+}
+
+enum Turno {
+  MANANA
+  TARDE
+}
+
+// -------------------------
+// ADMINISTRADOR
+// -------------------------
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Hash de la contraseña
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// -------------------------
+// PRODUCTOS
+// -------------------------
+
+model Product {
+  id          String   @id @default(uuid())
+  nombre      String
+  descripcion String?
+  precio      Int
+  imagenUrl   String
+  rinde       String?
+  categoria   String
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orderItems  OrderItem[]
+}
+
+// -------------------------
+// ZONAS DE ENVIO
+// -------------------------
+
+model DeliveryZone {
+  id           String   @id @default(uuid())
+  codigoPostal String   @unique
+  costoEnvio   Int
+  activa       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// -------------------------
+// PEDIDOS
+// -------------------------
+
+model Order {
+  id                String        @id @default(uuid())
+  numeroPedido      Int           @unique @default(autoincrement())
+
+  // Datos del cliente
+  nombreCliente     String
+  apellidoCliente   String
+  emailCliente      String
+  telefonoCliente   String
+  notasCliente      String?
+
+  // Entrega
+  tipoEntrega       TipoEntrega
+  calleEnvio        String?
+  numeroEnvio       String?
+  pisoDeptoEnvio    String?
+  ciudadEnvio       String?
+  codigoPostal      String?
+  indicacionesEnvio String?
+  costoEnvio        Int           @default(0)
+
+  // Importes en pesos enteros
+  subtotal          Int
+  totalFinal        Int
+
+  // Pago
+  metodoPago        MetodoPago
+  estadoPago        EstadoPago    @default(PENDIENTE)
+
+  // Seguimiento
+  estadoPedido      EstadoPedido  @default(PENDIENTE)
+  estadoEntrega     EstadoEntrega @default(PENDIENTE)
+
+  // Reserva
+  fechaTurno        DateTime      @db.Date
+  turno             Turno
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  items             OrderItem[]
+
+  @@index([estadoPedido, createdAt])
+  @@index([fechaTurno, turno])
+  @@index([emailCliente])
+}
+
+// -------------------------
+// DETALLE DEL PEDIDO
+// -------------------------
+
+model OrderItem {
+  id              String  @id @default(uuid())
+  orderId         String
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId       String
+  product         Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  // Datos históricos del producto al comprar
+  nombreProducto  String
+  imagenProducto  String?
+  precioUnitario  Int
+  cantidad        Int
+
+  @@index([orderId])
+  @@index([productId])
+}
