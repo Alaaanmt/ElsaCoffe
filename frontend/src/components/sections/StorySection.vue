@@ -21,7 +21,7 @@ import FadeInObserver from '@/components/ui/FadeInObserver.vue'
                     <!-- Columna de Texto Editorial -->
                     <div class="lg:col-span-6 space-y-8">
                         <div>
-                            <span class="text-xs uppercase tracking-[0.2em] font-medium text-tinta-suave mb-3 block">
+                            <span class="text-xs uppercase tracking-[0.2em] font-medium  text-verde-marca dark:text-acento mb-3 block">
                                 Nuestra Esencia
                             </span>
                             <h2

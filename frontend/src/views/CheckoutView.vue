@@ -185,7 +185,7 @@ const validarYContinuarAPago = () => {
                   <input type="radio" v-model="turnoSeleccionado" value="tarde" class="mt-1 accent-verde-marca" />
                   <div>
                     <span class="text-xs md:text-sm font-semibold text-tinta block">Turno Tarde</span>
-                    <span class="text-[11px] md:text-xs text-tinta-suave">13:00 a 17:00 hs</span>
+                    <span class="text-[11px] md:text-xs text-tinta-suave">13:00 a 19:00 hs</span>
                   </div>
                 </label>
               </div>

@@ -9,7 +9,7 @@ const abrirMapa = () => {
 
 <template>
     <section id="visitanos"
-        class="relative py-24 md:py-36 bg-superficie transition-colors duration-500 overflow-hidden">
+        class="relative py-24 md:py-36 bg-fondo transition-colors duration-500 overflow-hidden">
         <div class="mx-auto max-w-7xl px-5 sm:px-8">
             <FadeInObserver>
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -17,7 +17,7 @@ const abrirMapa = () => {
                     <!-- Columna de Información (Izquierda) -->
                     <div class="lg:col-span-6 space-y-8">
                         <div>
-                            <span class="text-xs uppercase tracking-[0.2em] font-medium text-tinta-suave mb-3 block">
+                            <span class="text-xs uppercase tracking-[0.2em] font-medium text-verde-marca dark:text-acento  mb-3 block">
                                 Ubicación & Horarios
                             </span>
                             <h2
@@ -26,7 +26,7 @@ const abrirMapa = () => {
                             </h2>
                         </div>
 
-                        <p class="font-cuerpo text-base text-tinta-suave leading-relaxed">
+                        <p class="font-cuerpo text-base md:text-lg text-tinta-suave leading-relaxed">
                             Un espacio pensado para que disfrutes de un excelente café de especialidad y pastelería
                             artesanal en el corazón de Mataderos.
                         </p>
@@ -73,7 +73,7 @@ const abrirMapa = () => {
                         <!-- Botón Cómo llegar -->
                         <div class="pt-4">
                             <button @click="abrirMapa"
-                                class="inline-flex items-center gap-3 px-7 py-3.5 rounded-full bg-verde-marca text-crema font-medium text-sm transition-all hover:bg-acento hover:text-verde-marca cursor-pointer shadow-md group">
+                                class="inline-flex items-center gap-3 px-7 py-3.5 rounded-full bg-verde-marca text-crema text-xs sm:text-sm font-medium uppercase transition-all hover:bg-acento hover:text-verde-marca cursor-pointer shadow-md group">
                                 <span>Cómo llegar</span>
                                 <PhArrowRight :size="16" weight="bold"
                                     class="transition-transform group-hover:translate-x-1" />

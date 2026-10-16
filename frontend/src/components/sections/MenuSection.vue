@@ -24,13 +24,13 @@ const categoriaSeleccionada = computed<MenuCategoria>(() => {
             <FadeInObserver>
                 <!-- Encabezado de sección -->
                 <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
-                    <span class="text-xs uppercase tracking-[0.2em] font-medium text-tinta-suave block">
+                    <span class="text-xs uppercase tracking-[0.2em] font-medium text-verde-marca dark:text-acento block">
                         Nuestra Carta
                     </span>
                     <h2 class="font-titulo text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-tinta">
                         Elaboración propia y sabores <span class="italic font-normal">auténticos</span>.
                     </h2>
-                    <p class="font-cuerpo text-base text-tinta-suave">
+                    <p class="font-cuerpo text-base md:text-lg text-tinta-suave">
                         Descubrí nuestras opciones de cafetería, desayunos, almuerzos y pastelería artesanal.
                     </p>
                 </div>

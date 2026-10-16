@@ -72,10 +72,10 @@ const scrollToSection = async (id: string) => {
       <nav class="hidden md:flex items-center gap-8">
         <button @click="scrollToSection('historia')" class="text-xl font-medium tracking-wide transition-colors hover:text-acento cursor-pointer" :class="scrolled ? 'text-tinta' : 'text-white drop-shadow-sm'">Historia</button>
         <button @click="scrollToSection('carta')" class="text-xl font-medium tracking-wide transition-colors hover:text-acento cursor-pointer" :class="scrolled ? 'text-tinta' : 'text-white drop-shadow-sm'">Carta</button>
+        <button @click="scrollToSection('tortas')" class="text-xl font-medium tracking-wide transition-colors hover:text-acento cursor-pointer" :class="scrolled ? 'text-tinta' : 'text-white drop-shadow-sm'">Tortas</button>      
         <button @click="scrollToSection('visitanos')" class="text-xl font-medium tracking-wide transition-colors hover:text-acento cursor-pointer" :class="scrolled ? 'text-tinta' : 'text-white drop-shadow-sm'">Visítanos</button>
-        <router-link to="/tortas" class="text-xl font-medium tracking-wide transition-colors hover:text-acento cursor-pointer" :class="scrolled ? 'text-tinta' : 'text-white drop-shadow-sm'">Tortas</router-link>
         
-        <!-- Botón de Carrito Desktop (Se oculta en /checkout y /checkout/payment) -->
+        <!-- Botón de Carrito Desktop -->
         <button v-if="!esVistaCheckout" @click="isCartOpen = true" class="relative flex items-center gap-2 px-3.5 py-2 rounded-full bg-superficie border border-borde-suave hover:border-borde-control transition-all cursor-pointer group">
           <div class="relative text-tinta">
             <PhShoppingCart :size="20" weight="fill" />
@@ -86,13 +86,13 @@ const scrollToSection = async (id: string) => {
       </nav>
 
       <div class="flex items-center gap-3">
-        <!-- Botones rápidos en versión Mobile (< md) -->
+        <!-- Botones -->
         <div class="flex md:hidden items-center gap-2">
           <router-link to="/tortas">
             <AuthorButton variant="pestana" :active="route.path === '/tortas'">Tortas</AuthorButton>
           </router-link>
           
-          <!-- Botón de Carrito Mobile (Se oculta en /checkout y /checkout/payment) -->
+          <!-- Botón de Carrito Mobile -->
           <button v-if="!esVistaCheckout" @click="isCartOpen = true" class="relative flex items-center p-2.5 rounded-full bg-superficie border border-borde-suave hover:border-borde-control transition-all cursor-pointer group">
             <div class="relative text-tinta flex items-center justify-center">
               <PhShoppingCart :size="18" weight="fill" />
