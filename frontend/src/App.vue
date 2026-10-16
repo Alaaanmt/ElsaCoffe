@@ -11,9 +11,12 @@ import CartDrawer from '@/components/cart/CartDrawer.vue'
 const route = useRoute()
 const { iniciarTema } = useTheme()
 
-// Ocultar footer y whatsapp
 const esVistaCheckout = computed(() => {
-  return route.path.startsWith('/checkout')
+  return route.path.startsWith('/checkout') || route.path.startsWith('/admin')
+})
+
+const esVistaAdmin = computed(() =>{
+  return route.path.startsWith('/admin')
 })
 
 onMounted(() => {
@@ -23,7 +26,7 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen flex flex-col bg-fondo text-tinta font-cuerpo antialiased selection:bg-acento selection:text-tinta transition-colors duration-500">
-    <SiteHeader/>
+    <SiteHeader v-if="!esVistaAdmin"/>
     
     <main class="flex-grow">
       <router-view />
