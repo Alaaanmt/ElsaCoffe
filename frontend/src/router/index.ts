@@ -5,6 +5,9 @@ import CheckoutView from '@/views/CheckoutView.vue'
 import PaymentView from '@/views/PaymentView.vue'
 import LoginView from '@/views/LoginView.vue'
 import AdminOrders from '@/views/AdminOrders.vue'
+import { useCart } from '@/composables/useCart'
+import { useCheckout } from '@/composables/useCheckout'
+import { validarNombreApellido, validarEmail, limpiarYValidarTelefono } from '@/utils/validators'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,12 +25,14 @@ const router = createRouter({
     {
       path: '/checkout',
       name: 'checkout',
-      component: CheckoutView
+      component: CheckoutView,
+      meta: { requiresCart: true }
     },
     {
       path: '/checkout/payment',
       name: 'checkout-payment',
-      component: PaymentView
+      component: PaymentView,
+      meta: { requiresCart: true, requiresCheckoutComplete: true }
     },
     {
       path: '/admin/login',
@@ -57,16 +62,37 @@ const router = createRouter({
 
 // GUARD
 router.beforeEach((to, _from, next) => {
-  const requiereAutenticacion = to.matched.some(record => record.meta.requiresAuth)
   const token = localStorage.getItem('elsa_admin_token')
 
-  if (requiereAutenticacion && !token) {
-    next({ name: 'admin-login' })
-  } else if (to.name === 'admin-login' && token) {
-    next({ name: 'admin-pedidos' })
-  } else {
-    next()
+  // Vista Admin
+  if (to.matched.some(record => record.meta.requiresAuth) && !token) {
+    return next({ name: 'admin-login' })
   }
-})
+  if (to.name === 'admin-login' && token) {
+    return next({ name: 'admin-pedidos' })
+  }
 
+  // Carrito No Vacío
+  if (to.matched.some(record => record.meta.requiresCart)) {
+    const { cartItems } = useCart()
+    if (!cartItems.value || cartItems.value.length === 0) {
+      return next({ name: 'tortas' })
+    }
+  }
+
+  // Ir al pago 
+  if (to.matched.some(record => record.meta.requiresCheckoutComplete)) {
+    const { datosCliente } = useCheckout()
+
+    const nombreValido = validarNombreApellido(datosCliente.nombre, datosCliente.apellido)
+    const emailValido = validarEmail(datosCliente.email)
+    const telefonoValido = limpiarYValidarTelefono(datosCliente.telefono)
+
+    if (!nombreValido || !emailValido || !telefonoValido) {
+      return next({ name: 'checkout' })
+    }
+  }
+
+  next()
+})
 export default router

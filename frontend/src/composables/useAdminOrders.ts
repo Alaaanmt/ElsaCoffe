@@ -1,9 +1,10 @@
 import { ref, computed } from 'vue'
-import { MOCK_ORDERS } from '@/data/mockOrders'
+import { useOrdersStore } from '@/stores/orders'
 import type { OrderMock, TabPedido, CriterioOrden } from '@/types/order'
 
 export function useAdminOrders() {
-  const pedidos = ref<OrderMock[]>([...MOCK_ORDERS])
+  const ordersStore = useOrdersStore()
+  
   const tabActiva = ref<TabPedido>('activos')
   const filtroEstado = ref<string>('TODOS')
   const filtroTiempoHistorial = ref<'TODOS' | 'SEMANA' | 'MES'>('TODOS')
@@ -20,10 +21,10 @@ export function useAdminOrders() {
     return (fechaEntrega - fechaCreacion) / (1000 * 60 * 60) >= 48
   }
 
-  // Métricas
-  const totalNuevos = computed(() => pedidos.value.filter(o => o.estadoPedido === 'NUEVO').length)
-  const totalPendientesPago = computed(() => pedidos.value.filter(o => o.estadoPago === 'PENDIENTE').length)
-  const totalParaHoy = computed(() => pedidos.value.filter(o =>
+  // Métricas dinámicas calculadas sobre la Store
+  const totalNuevos = computed(() => ordersStore.pedidos.filter(o => o.estadoPedido === 'NUEVO').length)
+  const totalPendientesPago = computed(() => ordersStore.pedidos.filter(o => o.estadoPago === 'PENDIENTE').length)
+  const totalParaHoy = computed(() => ordersStore.pedidos.filter(o =>
     o.fechaTurno === hoyStr &&
     o.estadoPedido !== 'ENTREGADO' &&
     o.estadoPedido !== 'CANCELADO' &&
@@ -40,9 +41,9 @@ export function useAdminOrders() {
 
   const pedidosSegunTab = computed(() => {
     if (tabActiva.value === 'activos') {
-      return pedidos.value.filter(o => o.estadoPedido !== 'ENTREGADO' && o.estadoPedido !== 'CANCELADO')
+      return ordersStore.pedidos.filter(o => o.estadoPedido !== 'ENTREGADO' && o.estadoPedido !== 'CANCELADO')
     } else {
-      let lista = pedidos.value.filter(o => o.estadoPedido === 'ENTREGADO' || o.estadoPedido === 'CANCELADO')
+      let lista = ordersStore.pedidos.filter(o => o.estadoPedido === 'ENTREGADO' || o.estadoPedido === 'CANCELADO')
       const ahora = new Date().getTime()
       if (filtroTiempoHistorial.value === 'SEMANA') {
         lista = lista.filter(o => new Date(o.createdAt).getTime() >= ahora - (7 * 24 * 60 * 60 * 1000))
@@ -71,7 +72,6 @@ export function useAdminOrders() {
     if (tabActiva.value === 'activos') {
       return [...listaBase].sort((a, b) => {
         if (criterioOrden.value === 'ENTREGA_PROXIMA') {
-        
           const timeA = new Date(`${a.fechaTurno}T${a.turno === 'mañana' ? '08:00:00' : '14:00:00'}`).getTime()
           const timeB = new Date(`${b.fechaTurno}T${b.turno === 'mañana' ? '08:00:00' : '14:00:00'}`).getTime()
           return timeA - timeB
@@ -98,14 +98,8 @@ export function useAdminOrders() {
     }
   }
 
-  const avanzarEstadoContextual = (order: OrderMock) => {
-    if (order.estadoPedido === 'NUEVO') order.estadoPedido = 'EN_PREPARACION'
-    else if (order.estadoPedido === 'EN_PREPARACION') order.estadoPedido = 'LISTO'
-    else if (order.estadoPedido === 'LISTO') order.estadoPedido = 'ENTREGADO'
-  }
-
   return {
-    pedidos,
+    pedidos: computed(() => ordersStore.pedidos),
     tabActiva,
     filtroEstado,
     filtroTiempoHistorial,
@@ -119,6 +113,7 @@ export function useAdminOrders() {
     totalParaHoy,
     filtrarPorMetrica,
     cambiarPagina,
-    avanzarEstadoContextual
+    avanzarEstadoContextual: ordersStore.avanzarEstadoOperativo,
+    actualizarEstadoPedido: ordersStore.actualizarEstadoPedido
   }
 }
